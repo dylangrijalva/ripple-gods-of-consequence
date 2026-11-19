@@ -5,8 +5,7 @@
     "": {
       "name": "ripple-gods-of-consequence",
       "dependencies": {
-        "@fontsource/barlow": "^5.3.0",
-        "@fontsource/baskervville": "^5.3.0",
+        "@fontsource-variable/geist": "^5.3.0",
         "lucide-react": "^1.76.0",
         "react": "^19.3.1",
         "react-dom": "^19.3.1",
@@ -32,9 +31,7 @@
 
     "@emnapi/wasi-threads": ["@emnapi/wasi-threads@2.2.0", "", { "dependencies": { "tslib": "^2.4.0" } }, "sha512-JP7OYH38Q7+pyTAe14raZHLQIK7BDKbdwji+Xi3pcd/6QkJYQH3SX4wu6EplGrGJWRepoNzedfm0G3B9Z4e9Rw=="],
 
-    "@fontsource/barlow": ["@fontsource/barlow@5.3.0", "", {}, "sha512-tGR0y6QObRtKv71MOth44222+mdNFM/ZWFWDV1VLzNbG4oK9PNRlyJzmkck4vHAi9ibHBXgt4SlY51amFP55CA=="],
-
-    "@fontsource/baskervville": ["@fontsource/baskervville@5.3.0", "", {}, "sha512-0o7Qw+CNjV9WCXrS6+Kmwxc3UANTg1PoiTKWk4p9u/sqWRc8DzKZij3UGcOM4h1xZMFm3pQkesSL0MzNNYnXEA=="],
+    "@fontsource-variable/geist": ["@fontsource-variable/geist@5.3.0", "", {}, "sha512-j0m+vLQuG5XAYoHtGCVu0spvlGreR3EzpECUVzkFmI1mTVnAO38l/NEPDCFgZ177JxzYJCLSmTQibIiYPilGrA=="],
 
     "@napi-rs/wasm-runtime": ["@napi-rs/wasm-runtime@1.2.6", "", { "dependencies": { "@tybys/wasm-util": "^0.10.3" }, "peerDependencies": { "@emnapi/core": "^1.7.1 || 2.0.0-beta.2", "@emnapi/runtime": "^1.7.1 || 2.0.0-beta.2" } }, "sha512-mRyDmEw9/fCDXCGfL1sbgIw/GUK0PVxRW4YwgPN61F3LQ+fSyoBFarJVzgGyhF6kRzEQZ0FejDqm4WLXSeqQmw=="],
 

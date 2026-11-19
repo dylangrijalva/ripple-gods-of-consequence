@@ -28,7 +28,7 @@ export function World(props:WorldProps) {
     setFailed(false)
     mount.dataset.ready='false'
     const canvas=renderer.domElement
-    const islandLabel = 'Three-dimensional island with a mountain village and harbor'
+    const islandLabel = 'Brinehaven, a harbor village below the mountains'
     canvas.setAttribute('role', 'img')
     canvas.setAttribute('aria-label', islandLabel)
     canvas.style.cssText='width:100%;height:100%;display:block;touch-action:none;cursor:grab'
@@ -53,15 +53,13 @@ export function World(props:WorldProps) {
     let yaw=.34,tilt=.62,zoom=1,dragging=false,px=0,py=0
     let width=1,h=1
     function cameraPosition() {
-      const isMenu=current.current.menu, ratio=width/h
-      const span = Math.max(isMenu?17.9:16.8, (isMenu && ratio>1.10 ? 38.7 : 25.7)/ratio)/zoom
-      const shift = isMenu && ratio>1.10 ? -.186*span*ratio : 0
-      const vertical = isMenu && ratio<=1.1 ? -span*.15 : 0
-      const tx=Math.cos(yaw)*shift,tz=-Math.sin(yaw)*shift
-      const center=new THREE.Vector3(tx,1.50+vertical,tz)
+      const ratio = width / h
+      const widthAcrossIsland = current.current.menu ? 27.8 : 25.7
+      const span = Math.max(16.8, widthAcrossIsland / ratio) / zoom
+      const center = new THREE.Vector3(0, 1.5, 0)
       camera.left=-span*ratio/2;camera.right=span*ratio/2
       camera.top=span/2;camera.bottom=-span/2
-      camera.position.set(tx+Math.sin(yaw)*Math.cos(tilt)*42,center.y+Math.sin(tilt)*42,tz+Math.cos(yaw)*Math.cos(tilt)*42)
+      camera.position.set(Math.sin(yaw)*Math.cos(tilt)*42,center.y+Math.sin(tilt)*42,Math.cos(yaw)*Math.cos(tilt)*42)
       camera.lookAt(center);camera.updateProjectionMatrix()
     }
     function resize(){
@@ -102,7 +100,13 @@ export function World(props:WorldProps) {
         active?.remove();active=undefined;activeSerial=fx?.serial
         if(fx){
           active=intervention(scene,fx.power,random);effectStart=time
-          canvas.setAttribute('aria-label', islandLabel + ' during ' + fx.power)
+          const weatherDetail = {
+            rain: 'Rain falls on the village.',
+            sun: 'The sun breaks through.',
+            bloom: 'Petals drift over the fields.',
+            storm: 'Lightning strikes above the village.'
+          }
+          canvas.setAttribute('aria-label', islandLabel + '. ' + weatherDetail[fx.power])
         }
       }
       if(active && time-effectStart>=10){
@@ -127,6 +131,6 @@ export function World(props:WorldProps) {
   },[props.seed])
 
   return <div ref={host} className="island-world" style={{width:'100%',height:'100%',position:'relative',overflow:'hidden',background:'#175a60'}}>
-    {failed && <p role="alert" style={{color:'white',padding:'2rem'}}>Enable WebGL in your browser to explore the island.</p>}
+    {failed && <p role="alert" style={{color:'white',padding:'2rem'}}>This map needs WebGL. Turn on graphics acceleration in your browser, then reload.</p>}
   </div>
 }

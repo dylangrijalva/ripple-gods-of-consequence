@@ -1,20 +1,20 @@
 import { useId, useState } from 'react'
-import { CloudRain, Sun, Sprout, CloudLightning, UsersRound, Wheat, Droplets, Sparkles, GitFork, ArrowRight, ArrowUpRight, CalendarDays, type LucideIcon } from 'lucide-react'
+import { CloudRain, Sun, Sprout, CloudLightning, UsersRound, Wheat, Droplets, Sparkles, GitFork, ArrowRight, CalendarDays, type LucideIcon } from 'lucide-react'
 import { intervene, type State, type Power } from './simulation'
 import { nextDays } from './chronicle'
 
 export type Metric = 'population' | 'food' | 'water' | 'faith'
-export const metrics: { id: Metric, label: string, unit: string, Icon: LucideIcon }[] = [
-  { id: 'population', label: 'Population', unit: 'villagers', Icon: UsersRound },
-  { id: 'food', label: 'Food', unit: 'units', Icon: Wheat },
-  { id: 'water', label: 'Water', unit: 'units', Icon: Droplets },
-  { id: 'faith', label: 'Faith', unit: '/ 100', Icon: Sparkles },
+export const metrics: { id: Metric, label: string, Icon: LucideIcon }[] = [
+  { id: 'population', label: 'Population', Icon: UsersRound },
+  { id: 'food', label: 'Food', Icon: Wheat },
+  { id: 'water', label: 'Water', Icon: Droplets },
+  { id: 'faith', label: 'Faith', Icon: Sparkles },
 ]
-export const powers: {id: Power, name: string, description: string, past: string, Icon: LucideIcon}[] = [
-  { id: 'rain', name: 'Call rain', description: 'Fill the reservoirs and water the soil.', past: 'Rain fell over the island.', Icon: CloudRain },
-  { id: 'sun', name: 'Bring sunshine', description: 'Ripen the crops. Water stores fall.', past: 'Sunlight warmed the fields.', Icon: Sun },
-  { id: 'bloom', name: 'Bless harvest', description: 'Feed the village and deepen its faith.', past: 'A blessing filled the granaries.', Icon: Sprout },
-  { id: 'storm', name: 'Summon storm', description: 'Flood the fields and scatter villagers.', past: 'A storm swept through the village.', Icon: CloudLightning },
+export const powers: {id: Power, name: string, shortName: string, description: string, past: string, Icon: LucideIcon}[] = [
+  { id: 'rain', name: 'Send rain', shortName: 'Rain', description: 'Five days of rain water the fields and refill the cistern.', past: 'Rain soaked the fields.', Icon: CloudRain },
+  { id: 'sun', name: 'Bring out the sun', shortName: 'Sun', description: 'Four sunny days ripen the wheat. The village draws on stored water.', past: 'The sun came out over the wheat fields.', Icon: Sun },
+  { id: 'bloom', name: 'Bless the harvest', shortName: 'Blessing', description: 'The village gains food and faith. The next six harvests bring in more grain.', past: 'The wheat came in early.', Icon: Sprout },
+  { id: 'storm', name: 'Send a storm', shortName: 'Storm', description: 'Three days of heavy rain spoil food and cost the village lives.', past: 'A storm struck the village.', Icon: CloudLightning },
 ]
 export function signed(delta: number) {
   return delta > 0 ? '+' + delta : delta.toString()
@@ -47,7 +47,9 @@ function HistoryChart({ history, alternate, metric }: {history: State[], alterna
         <circle cx={x(active)} cy={y(history[active][metric])} r="3.3" fill="#357b68" stroke="#fff"/>
         {alternate && <circle cx={x(active)} cy={y(alternate[active][metric])} r="3.3" fill="#b66c35" stroke="#fff"/>}
       </svg>
-      <input type="range" aria-label="Inspect chart day" aria-valuetext={`Day ${history[active].day}, ${history[active][metric]} ${metric}`} min="0" max={length - 1} value={active} onChange={e => setHover(Number(e.target.value))}/>
+      <input type="range" aria-label="Day on chart" aria-valuetext={alternate
+        ? `Day ${history[active].day}, ${metric} with no new power ${history[active][metric]}, with the power ${alternate[active][metric]}`
+        : `Day ${history[active].day}, ${metric} ${history[active][metric]}`} min="0" max={length - 1} value={active} onChange={e => setHover(Number(e.target.value))}/>
     </div>
     <div className="chart-axis"><span>Day {history[0].day}</span><span>Day {history[length - 1].day}</span></div>
   </div>
@@ -57,23 +59,23 @@ export function Civilization({history}: {history: State[]}) {
   const [metric, select] = useState<Metric>('population')
   const current = history[history.length - 1]
   const start = history[0]
-  const {label, unit} = metrics.find(m => m.id === metric)!
+  const {label} = metrics.find(m => m.id === metric)!
   return <>
-    <p className="panel-intro">Follow the villagers and the stores they depend on.</p>
+    <p className="panel-intro">Choose a number to see how it changed day by day.</p>
     <div className="metric-grid">
       {metrics.map(({id, label, Icon}) => <button className={'metric-card ' + (metric === id ? 'chosen' : '')} aria-pressed={metric === id} key={id} onClick={() => select(id)}>
         <span><Icon size={17}/>{label}</span><strong>{current[id].toLocaleString()}</strong>
       </button>)}
     </div>
-    <section className="chart-card"><div className="section-caption"><span className="tiny-line"/> Settlement history</div>
-      <h3>{label} over time</h3>
+    <section className="chart-card">
+      <h3>{label} by day</h3>
       <HistoryChart history={history} metric={metric}/>
-      <div className="chart-foot"><ArrowUpRight size={17}/><strong>{signed(current[metric] - start[metric])}</strong> {unit === '/ 100' ? 'faith' : unit} since day {start.day}</div>
+      <div className="chart-foot">Change since day {start.day} <strong>{signed(current[metric] - start[metric])}</strong></div>
     </section>
   </>
 }
 
-type Comparison = {base: State[], branch: State[], power: Power}
+type Comparison = {base: State[], branch: State[]}
 
 export function Timelines({current}: {current: State}) {
   const [fork, setFork] = useState<State | null>(null)
@@ -84,22 +86,22 @@ export function Timelines({current}: {current: State}) {
     setFork(current)
     setComparison(null)
   }
+  const chosenPower = powers.find(p => p.id === power)!
   function compare() {
-    if (fork) setComparison({base: nextDays(fork, 7), branch: nextDays(intervene(fork, power), 7), power})
+    if (fork) setComparison({base: nextDays(fork, 7), branch: nextDays(intervene(fork, power), 7)})
   }
   return <>
-    <p className="panel-intro">Give one branch a god power and see where the two islands stand seven days later.</p>
-    {!fork ? <div className="fork-empty"><GitFork size={48} strokeWidth={1}/><h3>One island, two futures</h3><p>Start both timelines from your island on day {current.day}.</p><button className="primary dark" onClick={createBranch}>Create a branch <ArrowRight size={17}/></button></div> :
+    {!fork ? <div className="fork-empty"><GitFork size={36} strokeWidth={1.5}/><h3>Branch from day {current.day}</h3><p>Give one copy of the island a power and leave the other alone. See how each village fares over the next week.</p><button className="primary dark" onClick={createBranch}>Start a branch <ArrowRight size={17}/></button></div> :
     <>
-      <div className="branch-origin"><GitFork size={22}/><div><small>Common origin</small><strong>Day {fork.day}</strong></div><button className="text-button" onClick={createBranch}>Refork today</button></div>
-      <div className="section-caption"><span className="tiny-line"/> Branch intervention</div>
-      <div className="branch-powers">{powers.map(({id, Icon, name}) => <button key={id} aria-label={name} aria-pressed={power === id} className={power === id ? 'chosen' : ''} onClick={() => {select(id); setComparison(null)}}><Icon size={19}/><span>{name}</span></button>)}</div>
-      {!comparison && <button className="primary dark full" onClick={compare}>Compare outcomes <ArrowRight size={16}/></button>}
+      <div className="branch-origin"><GitFork size={22}/><div><small>Starting day</small><strong>{fork.day}</strong></div><button className="text-button" onClick={createBranch}>Use today instead</button></div>
+      <div className="section-caption" id="branch-power-label">Power to try</div>
+      <div className="branch-powers" role="group" aria-labelledby="branch-power-label">{powers.map(({id, Icon, description, shortName}) => <button key={id} title={description} aria-pressed={power === id} className={power === id ? 'chosen' : ''} onClick={() => {select(id); setComparison(null)}}><Icon size={19}/><span>{shortName}</span></button>)}</div>
+      {!comparison && <button className="primary dark full" onClick={compare}>Run one week <ArrowRight size={16}/></button>}
       {comparison && <div className="comparison">
-        <div className="chart-title"><div className="section-caption"><CalendarDays size={13}/> Day {comparison.base[7].day}</div><h3>Seven days later</h3></div>
-        <table><thead><tr><th>Measure</th><th>Untouched</th><th>Branch</th></tr></thead><tbody>{metrics.map(({id, label}) => <tr key={id}><th>{label}</th><td>{comparison.base[7][id]}</td><td>{comparison.branch[7][id]} <small>({signed(comparison.branch[7][id] - comparison.base[7][id])})</small></td></tr>)}</tbody></table>
-        <div className="compare-select"><label htmlFor="comparison-metric">Compare</label><select id="comparison-metric" value={metric} onChange={e => setMetric(e.target.value as Metric)}>{metrics.map(m => <option key={m.id} value={m.id}>{m.label}</option>)}</select></div>
-        <div className="series-legend"><span>Untouched</span><span>Branch</span></div>
+        <div className="chart-title"><h3>After one week</h3><div className="section-caption"><CalendarDays size={13}/> Day {comparison.base[7].day}</div></div>
+        <table><thead><tr><th>Village totals</th><th>No new power</th><th>{chosenPower.shortName}</th></tr></thead><tbody>{metrics.map(({id, label}) => <tr key={id}><th>{label}</th><td>{comparison.base[7][id]}</td><td>{comparison.branch[7][id]} <small>({signed(comparison.branch[7][id] - comparison.base[7][id])})</small></td></tr>)}</tbody></table>
+        <div className="compare-select"><label htmlFor="comparison-metric">Show on chart</label><select id="comparison-metric" value={metric} onChange={e => setMetric(e.target.value as Metric)}>{metrics.map(m => <option key={m.id} value={m.id}>{m.label}</option>)}</select></div>
+        <div className="series-legend"><span>No new power</span><span>{chosenPower.shortName}</span></div>
         <HistoryChart history={comparison.base} alternate={comparison.branch} metric={metric}/>
       </div>}
     </>}
