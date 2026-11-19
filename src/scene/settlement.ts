@@ -58,6 +58,10 @@ function house(s: Shapes,height:Height,[x,z,size,angle]:Place,i:number) {
   piece(s.box,'#8a806b',0,.02,0,width+.04,.4,depth+.04)
   piece(s.box,['#e7cb94','#efd7a7','#ddbb86','#faf1cc'][i%4],0,.45,0,width,.85,depth)
   piece(s.roof,['#bd543c','#a8533d','#c77942','#477778','#aa523b'][i%5],0,.87,0,1.17,.64,1.36)
+  for(const end of [-1,1]) {
+    piece(s.roof,'#e6cc99',0,.88,.636*end,1.00,.51,.094)
+    piece(s.box,'#806042',0,.95,.683*end,.045,.24,.025)
+  }
   piece(s.box,'#553e35',0,1.49,0,.065,.065,1.4)
   piece(s.box,'#80654b',.26,1.32,-.30,.16,.5,.19)
   piece(s.box,'#9e8566',.26,1.56,-.30,.22,.10,.24)
@@ -161,10 +165,35 @@ function boat(scene:THREE.Scene,x:number,z:number,size:number,angle:number,sailC
   return group
 }
 
+function market(s:Shapes,height:Height) {
+  // The awning and bunting sit beside the fork in the harbor road.
+  const x=1.16,z=3.13,y=height(x,z)
+  s.at(s.box,'#97744a',[x,y+.25,z],[.78,.37,.40])
+  for(const dx of [-.38,.38]) {
+    for (const dz of [-.20,.20]) s.at(s.pole,'#885f42',[x+dx,y+.51,z+dz],[.026,1.02,.026])
+  }
+  for(let i=0;i<7;i++) {
+    const dx=(i-3)*.137,tone=i%2?'#dba667':'#f1deb3'
+    s.at(s.box,tone,[x+dx,y+.94,z],[.138,.055,.66],[.14,0,0])
+    s.at(s.box,tone,[x+dx,y+.838,z+.312],[.138,.126,.035])
+  }
+  for(let i=0;i<9;i++) {
+    s.at(s.rock,i%2?'#be7344':'#bac667',[x+(i%3-1)*.20,y+.46,z+(Math.floor(i/3)-1)*.11],[.095,.075,.078])
+  }
+  const a:Point=[-1.8,height(-1.8,2.39)+1.0,2.39], b:Point=[-.83,height(-.83,3.2)+1.15,3.2]
+  for(const p of [a,b])s.beam('#947958',[p[0],height(p[0],p[2]),p[2]],p,.044)
+  s.beam('#ab966f',a,b,.018)
+  for(let i=1;i<8;i++) {
+    const t=i/8
+    s.at(s.pine,['#cd7553','#f0d69b','#799991'][i%3],[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t-.085,a[2]+(b[2]-a[2])*t],[.073,.18,.045],[0,.3,Math.PI])
+  }
+}
+
 export function populate(scene:THREE.Scene,height:Height,random:()=>number) {
   const s=new Shapes()
   addPaths(scene,height)
   homes.forEach((p,i)=>house(s,height,p,i))
+  market(s,height)
   farm(s,height,4.9,-.25,random)
   farm(s,height,-5.52,.63,random)
   const blades=windmill(scene,s,height)

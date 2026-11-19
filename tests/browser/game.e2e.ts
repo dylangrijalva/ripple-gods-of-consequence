@@ -25,10 +25,14 @@ test("play an island, inspect its history and compare a fork", async ({page, req
   await photograph(page, "main-menu");
   await button("Enter world").click();
   await photograph(page, "world-overview");
+  await button("Pause time").click();
   await button("Powers").click();
   await button("Call rain").click();
   await expect(page.getByText("Rain fell over the island.", {exact: false}).first()).toBeVisible();
+  await expect(page.getByRole("img", {name:/during rain$/})).toBeVisible();
   await photograph(page, "god-powers");
+  for (let day = 0; day < 5; day++) await button("Advance one day").click();
+  await expect(page.getByRole("img", {name:/during rain$/})).toHaveCount(0, {timeout: 20_000});
   await button("Civilization").click();
   await expect(page.getByRole("heading", {name:"Population over time"})).toBeVisible();
   await page.getByRole("button", {name:/^Water/}).click();

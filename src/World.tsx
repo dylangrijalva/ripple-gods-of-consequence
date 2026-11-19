@@ -28,7 +28,9 @@ export function World(props:WorldProps) {
     setFailed(false)
     mount.dataset.ready='false'
     const canvas=renderer.domElement
-    canvas.setAttribute('aria-label','Three-dimensional island with a mountain village and harbor')
+    const islandLabel = 'Three-dimensional island with a mountain village and harbor'
+    canvas.setAttribute('role', 'img')
+    canvas.setAttribute('aria-label', islandLabel)
     canvas.style.cssText='width:100%;height:100%;display:block;touch-action:none;cursor:grab'
     mount.appendChild(canvas)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.6))
@@ -98,9 +100,15 @@ export function World(props:WorldProps) {
       const fx=current.current.effect
       if(fx?.serial!==activeSerial){
         active?.remove();active=undefined;activeSerial=fx?.serial
-        if(fx){active=intervention(scene,fx.power,random);effectStart=time}
+        if(fx){
+          active=intervention(scene,fx.power,random);effectStart=time
+          canvas.setAttribute('aria-label', islandLabel + ' during ' + fx.power)
+        }
       }
-      if(active && time-effectStart>=10){active.remove();active=undefined}
+      if(active && time-effectStart>=10){
+        active.remove();active=undefined
+        canvas.setAttribute('aria-label', islandLabel)
+      }
       active?.frame(time-effectStart)
       animateVillage(time,current.current.population);animateSky(time);water.value=time
       renderer.render(scene,camera)

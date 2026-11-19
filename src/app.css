@@ -268,3 +268,18 @@ kbd { font-family:inherit; font-size:12px; padding:2px 6px; background:#e8eadf; 
  .menu-mark img { width:28px; height:28px; }
  .menu-footer { bottom:9px; padding-top:5px; }
 }
+@media(min-width:721px) {
+  .inspector.timelines:has(.comparison) { padding:18px 24px; }
+  .timelines:has(.comparison) .panel-intro { margin:6px 0 12px; font-size:14px; }
+  .timelines:has(.comparison) h2 { font-size:36px; margin-top:4px; }
+  .timelines:has(.comparison) .branch-origin { padding:8px 12px; margin:0 0 10px; }
+  .timelines:has(.comparison) .branch-powers { margin:6px 0 10px; }
+  .timelines:has(.comparison) .branch-powers button { min-height:46px; }
+  .comparison { padding-top:9px; }
+  .comparison .chart-title { display:flex; flex-direction:row-reverse; align-items:baseline; justify-content:space-between; }
+  .comparison h3 { margin:0; font-size:25px; }
+  .comparison table { margin:7px 0 10px; }
+  .comparison th,.comparison td { padding:4px 0; }
+  .comparison .history-chart { margin-top:9px; }
+  .comparison .plot svg { height:78px; }
+}
