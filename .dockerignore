@@ -1,0 +1,8 @@
+.git
+node_modules
+dist
+**/target
+docs
+test-results
+.env*
+.DS_Store
