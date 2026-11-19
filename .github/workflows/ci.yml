@@ -1,0 +1,28 @@
+name: Game checks
+
+on: [push, pull_request]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.10
+
+      - name: Test the Rust simulation
+        working-directory: sim
+        run: cargo test --locked
+
+      - name: Rebuild and compare the shipped WebAssembly
+        run: |
+          sh sim/build.sh
+          git diff --exit-code -- public/simulation.wasm
+
+      - run: bun install --frozen-lockfile
+      - run: bun run test
+      - run: bun run build
