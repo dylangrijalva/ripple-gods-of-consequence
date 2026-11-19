@@ -27,6 +27,7 @@ export function createHandler(distDirectory: string) {
     if (!await file.exists()) return new Response(null, { status: 404 });
     return new Response(request.method === "HEAD" ? null : file, {
       headers: {
+        "Content-Length": String(file.size),
         "Content-Type": path.endsWith(".wasm") ? "application/wasm" : file.type,
         "Cache-Control": path.startsWith("/assets/") ? "public, max-age=31536000, immutable" : "no-cache",
         "X-Content-Type-Options": "nosniff"
