@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="112" height="112" viewBox="0 0 112 112" role="img" aria-label="Ripple island seal">
+<rect width="112" height="112" rx="25" fill="#133e3b"/>
+<g fill="none" stroke="#eac082" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="56" cy="56" r="44" stroke-opacity=".65"/><circle cx="56" cy="56" r="39" stroke-dasharray="1 8" stroke-opacity=".5"/>
+<path d="M26 64c8 0 13-2 19-7l13-20 10 19 9 4 9 4z" fill="#eac082" fill-opacity=".16"/>
+<path d="m47 54 11-17 5 10-4-2-2 5-3-2-7 8M29 71c8 2 15-3 23-1s12 4 18 2 9-3 13-2M39 78c6-1 11-2 16 0s12 3 19 0"/>
+<circle cx="39" cy="43" r="5" fill="#eac082"/><path d="M56 9v7m47 40h-7M9 56h7m40 47v-7"/>
+</g></svg>
